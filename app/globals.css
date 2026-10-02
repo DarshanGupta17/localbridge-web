@@ -9,9 +9,7 @@ html { scroll-behavior: smooth; }
 body { margin: 0; background: var(--white); color: var(--black); font-family: 'Inter', sans-serif; }
 a { color: inherit; text-decoration: none; }
 .site-shell { overflow: hidden; }
-.site-nav { align-items: center; background: #000; border-bottom: 1px solid #222; color: #fff; display: flex; height: 66px; justify-content: space-between; padding: 0 4vw; position: sticky; top: 0; z-index: 20; }
-.site-nav .nav-launch { border-color: #333; }
-.site-nav .menu-toggle { color: #fff; }
+.site-nav { align-items: center; background: #fff; border-bottom: 1px solid #e8e8e8; display: flex; height: 66px; justify-content: space-between; padding: 0 4vw; position: sticky; top: 0; z-index: 20; }
 .wordmark { align-items: center; display: flex; font-family: 'Bricolage Grotesque', sans-serif; font-size: 16px; font-weight: 700; gap: 10px; letter-spacing: -.04em; }
 .wordmark img { filter: invert(1); height: 21px; object-fit: contain; width: 21px; }
 .nav-links { align-items: center; display: flex; font-family: 'IBM Plex Mono', monospace; font-size: 10px; gap: clamp(14px, 2vw, 32px); letter-spacing: .03em; }
@@ -149,14 +147,7 @@ h1 em, h2 em { font-style: normal; font-weight: 400; }
 .light-steps { border-color: var(--line); }
 .light-steps .step { border-color: var(--line); }
 .light-steps .step p { color: #555; }
-.hero.section-light, .tools-light { background: #000; color: #fff; }
-.hero.section-light .hero-intro, .tools-light .section-heading-row p, .tools-light .tool-category > h3 { color: #999; }
-.hero.section-light .button-dark { background: #fff; color: #000; }
-.hero.section-light .text-link { color: #fff; }
-.tools-light .tools-grid, .tools-light .tools-grid article, .tools-light .tool-category > h3 { border-color: #333; }
-.tools-light .tools-grid article p { color: #999; }
-.tools-light .tools-grid article:hover { background: #fff; color: #000; }
-.tools-light .tools-grid article:hover p { color: #555; }
+.tools-light { background: #fff; color: #000; }
 .light-count { color: #777; }
 .tool-category { margin-top: 70px; }
 .tool-category > h3 { border-bottom: 1px solid var(--line); font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .1em; padding-bottom: 16px; }
