@@ -3,120 +3,37 @@
 import { useState } from 'react'
 import { ArrowDown, ArrowUpRight, Menu, X } from 'lucide-react'
 
-const tools = [
-  ['01', 'Create directory', 'Create folders inside the workspace.'],
-  ['02', 'Create file', 'Add a new file to the project.'],
-  ['03', 'Delete directory', 'Remove a project directory.'],
-  ['04', 'Delete file', 'Remove a file from the workspace.'],
-  ['05', 'Get project context', 'Understand the active project.'],
-  ['06', 'Git branch', 'Inspect the current branch.'],
-  ['07', 'Git diff', 'Review changes in the repository.'],
-  ['08', 'Git status', 'Check the repository state.'],
-  ['09', 'Read file', 'Read files directly from disk.'],
-  ['10', 'Search file', 'Find relevant code across a project.'],
-  ['11', 'Update project context', 'Keep the agent in sync.'],
-  ['12', 'Write file', 'Make supported changes to files.'],
+const toolGroups = [
+  { title: 'WORKSPACE & FILES', tools: [
+    ['01', 'Create directory', 'Create directories inside the workspace.'], ['02', 'Create file', 'Create new project files.'], ['03', 'Delete directory', 'Delete directories from the workspace.'], ['04', 'Delete file', 'Delete files from the workspace.'], ['05', 'Get active editor', 'Inspect the currently active editor.'], ['06', 'Get project context', 'Retrieve the current project context.'], ['07', 'Get workspace info', 'Inspect workspace information.'], ['08', 'Read file', 'Read files from the workspace.'], ['09', 'Search file', 'Search files and project content.'], ['10', 'Update project context', 'Update the maintained project context.'], ['11', 'Write file', 'Write file contents to the workspace.'],
+  ]},
+  { title: 'GIT', tools: [['12', 'Git branch', 'Inspect Git branch information.'], ['13', 'Git diff', 'Inspect working-tree changes.'], ['14', 'Git log', 'Inspect repository history.'], ['15', 'Git show', 'Inspect a specific Git object or commit.'], ['16', 'Git staged diff', 'Inspect staged changes.'], ['17', 'Git status', 'Inspect repository status.']] },
+  { title: 'TERMINAL & COMMANDS', tools: [['18', 'Run command', 'Run a command in the local environment.'], ['19', 'Read terminal', 'Read terminal output and state.'], ['20', 'Run tests', 'Run project tests.']] },
+  { title: 'PROCESSES', tools: [['21', 'List processes', 'Inspect running processes.'], ['22', 'Read process output', 'Read output from a running process.'], ['23', 'Send process input', 'Send input to a running process.'], ['24', 'Start process', 'Start a local process.'], ['25', 'Stop process', 'Stop a running process.']] },
+  { title: 'LOCAL DEVELOPMENT', tools: [['26', 'Get diagnostics', 'Retrieve development environment diagnostics.'], ['27', 'Get environment', 'Inspect relevant local environment information.'], ['28', 'Http request', 'Make HTTP requests from the local environment.'], ['29', 'List local servers', 'Inspect locally running development servers.']] },
 ]
-
-const steps = [
-  ['01', 'Install', 'Install the free LocalBridge extension in VS Code.'],
-  ['02', 'Connect', 'Connect your AI coding agent to your LocalBridge instance.'],
-  ['03', 'Build', 'Ask your agent to inspect, modify and work with your project.'],
-]
-
-function SectionLabel({ number, children, dark = false }: { number: string; children: React.ReactNode; dark?: boolean }) {
-  return <div className={`section-label ${dark ? 'section-label-dark' : ''}`}><span>{number} /</span><span>{children}</span></div>
-}
-
-function BridgeDiagram({ dark = false }: { dark?: boolean }) {
-  return (
-    <div className={`bridge-diagram ${dark ? 'bridge-diagram-dark' : ''}`} aria-label="Claude connects through LocalBridge to your project">
-      <div className="diagram-node"><span className="node-kicker">AI AGENT</span><strong>CLAUDE</strong></div>
-      <div className="diagram-line"><span>TOOL REQUEST</span><i /></div>
-      <div className="diagram-node diagram-node-accent"><span className="node-kicker">THE BRIDGE</span><strong>LOCALBRIDGE</strong></div>
-      <div className="diagram-line"><span>SUPPORTED ACTION</span><i /></div>
-      <div className="diagram-node"><span className="node-kicker">YOUR WORKSPACE</span><strong>VS CODE PROJECT</strong></div>
-    </div>
-  )
-}
+const steps = [['01', 'Connect', 'Install LocalBridge in VS Code and establish the connection with your AI agent.'], ['02', 'Request', 'The AI agent requests a supported operation through the bridge.'], ['03', 'Execute', 'LocalBridge performs the requested operation in the local environment.'], ['04', 'Return', 'The result is returned to the connected agent.']]
+function SectionLabel({ number, children, dark = false }: { number: string; children: React.ReactNode; dark?: boolean }) { return <div className={`section-label ${dark ? 'section-label-dark' : ''}`}><span>{number} /</span><span>{children}</span></div> }
+function BridgeDiagram({ dark = false }: { dark?: boolean }) { return <div className={`bridge-diagram ${dark ? 'bridge-diagram-dark' : ''}`} aria-label="Web AI connects through LocalBridge to the local environment"><div className="diagram-node"><span className="node-kicker">UPSTREAM</span><strong>WEB AI</strong><small>Reason / Generate</small></div><div className="diagram-line"><span>SUPPORTED REQUEST</span><i /></div><div className="diagram-node diagram-node-accent"><span className="node-kicker">CONNECTION LAYER</span><strong>LOCALBRIDGE</strong><small>Connect / Execute</small></div><div className="diagram-line"><span>LOCAL OPERATION</span><i /></div><div className="diagram-node"><span className="node-kicker">DOWNSTREAM</span><strong>LOCAL ENVIRONMENT</strong><small>Files / Git / Runtime</small></div></div> }
 
 export function LandingPage() {
-  const [menuOpen, setMenuOpen] = useState(false)
-  const closeMenu = () => setMenuOpen(false)
-
-  return (
-    <div className="site-shell">
-      <header className="site-nav">
-        <a href="#top" className="wordmark" onClick={closeMenu} aria-label="LocalBridge home">
-          <img src="/localbridge.png" alt="" />
-          <span>LOCALBRIDGE</span>
-        </a>
-        <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-label={menuOpen ? 'Close menu' : 'Open menu'}>
-          {menuOpen ? <X /> : <Menu />}
-        </button>
-        <nav className={`nav-links ${menuOpen ? 'nav-links-open' : ''}`} aria-label="Main navigation">
-          <a href="#about" onClick={closeMenu}>01 ABOUT</a>
-          <a href="#how-it-works" onClick={closeMenu}>02 HOW IT WORKS</a>
-          <a href="#claude" onClick={closeMenu}>03 CLAUDE</a>
-          <a href="#tools" onClick={closeMenu}>04 TOOLS</a>
-          <a className="nav-launch" href="#launch" onClick={closeMenu}>LAUNCHING SOON <ArrowUpRight /></a>
-        </nav>
-      </header>
-
-      <main id="top">
-        <section className="hero section-light">
-          <div className="hero-copy">
-            <p className="eyebrow">FREE VS CODE EXTENSION <span>///</span> LAUNCHING SOON</p>
-            <h1>Your AI can code.<br /><em>Now let it reach</em><br />your local project.</h1>
-            <p className="hero-intro">LocalBridge connects AI coding agents like Claude to your local VS Code workspace, giving them a controlled way to read, write, search and manage your project.</p>
-            <div className="hero-actions">
-              <a className="button button-dark" href="#launch">LAUNCHING SOON ON VSCODE <ArrowUpRight /></a>
-              <a className="text-link" href="#how-it-works">SEE HOW IT WORKS <ArrowDown /></a>
-            </div>
-          </div>
-          <div className="hero-visual">
-            <div className="visual-index">LB / 001</div>
-            <BridgeDiagram />
-            <div className="visual-caption">ONE BRIDGE BETWEEN<br />YOUR AI AND YOUR CODE</div>
-          </div>
-        </section>
-
-        <section id="about" className="section-dark problem-section">
-          <div className="section-inner split-grid">
-            <SectionLabel number="01" dark>THE PROBLEM</SectionLabel>
-            <div className="problem-content"><h2>Your code lives locally.<br /><span>Your AI doesn&apos;t.</span></h2><p>AI coding agents are powerful, but they need a way to interact with the environment where your project actually lives.</p><p className="statement">LocalBridge creates<br />that bridge.</p></div>
-            <BridgeDiagram dark />
-          </div>
-        </section>
-
-        <section className="section-light bridge-section">
-          <div className="section-inner">
-            <SectionLabel number="02">THE BRIDGE</SectionLabel>
-            <div className="section-heading-row"><h2>One bridge between<br />your AI and your workspace.</h2><p>LocalBridge is a free VS Code extension that exposes controlled project-level tools to AI coding agents. Instead of manually moving files or copying code back and forth, your agent can interact with the project through LocalBridge.</p></div>
-            <div className="feature-trio"><article><strong>LOCAL</strong><p>Your project stays in your local development environment.</p></article><article><strong>CONTROLLED</strong><p>The extension acts as the bridge between the agent and your workspace.</p></article><article><strong>DIRECT</strong><p>Your coding agent can perform supported project operations through the bridge.</p></article></div>
-          </div>
-        </section>
-
-        <section id="how-it-works" className="section-dark how-section">
-          <div className="section-inner"><SectionLabel number="03" dark>HOW IT WORKS</SectionLabel><h2 className="center-heading">Three steps.<br /><span>One bridge.</span></h2><div className="steps-grid">{steps.map(([number, title, body]) => <article key={number} className="step"><span>{number}</span><h3>{title}</h3><p>{body}</p></article>)}</div><div className="flow-strip"><span>CLAUDE</span><i>↓</i><span>TOOL REQUEST</span><i>↓</i><span>LOCALBRIDGE</span><i>↓</i><span>VS CODE WORKSPACE</span></div></div>
-        </section>
-
-        <section id="claude" className="section-light claude-section">
-          <div className="section-inner"><SectionLabel number="04">CONNECT CLAUDE</SectionLabel><div className="section-heading-row"><h2>Connect Claude<br />to your local workspace.</h2><p>A clear path from install to a working project. Keep your code where it is, and give your agent a way to work with it.</p></div><div className="setup-layout"><div className="setup-list">{[['01', 'Install LocalBridge', 'Install the free LocalBridge extension in VS Code.'], ['02', 'Open your project', 'Open the project you want Claude to work with.'], ['03', 'Start LocalBridge', 'Start the LocalBridge bridge from the extension.'], ['04', 'Connect Claude', 'Configure Claude to use the LocalBridge connection.'], ['05', 'Start building', 'Claude can now use the available tools to work with your project.']].map(([n, title, body]) => <article key={n}><span>{n}</span><div><h3>{title}</h3><p>{body}</p></div></article>)}</div><div className="terminal-card"><div className="terminal-top"><span>LOCALBRIDGE / STATUS</span><span>●</span></div><div className="terminal-body"><p className="muted">$ localbridge start</p><p>bridge <b>connected</b></p><p>workspace <b>my-project</b></p><p>tools <b>12 available</b></p><div className="terminal-rule" /><p className="muted">ready for requests<span className="cursor" /></p></div></div></div></div>
-        </section>
-
-        <section id="tools" className="section-dark tools-section">
-          <div className="section-inner"><SectionLabel number="05" dark>TOOLS</SectionLabel><div className="section-heading-row tools-heading"><h2>Give your agent hands-on access to the project.</h2><p>LocalBridge currently supports a growing set of project and Git operations.</p></div><div className="tools-grid">{tools.map(([number, title, body]) => <article key={number}><span>{number}</span><h3>{title}</h3><p>{body}</p><ArrowUpRight /></article>)}</div><p className="tools-count">12 TOOLS AVAILABLE</p></div>
-        </section>
-
-        <section className="section-light experience-section"><div className="section-inner"><SectionLabel number="06">THE EXPERIENCE</SectionLabel><h2>Stop being<br /><em>the middleman.</em></h2><p className="experience-copy">Instead of repeatedly copying files, pasting code and manually moving changes between your editor and your AI assistant, LocalBridge lets the agent interact with the project through supported tools.</p><div className="compare-grid"><div><span>WITHOUT LOCALBRIDGE</span><p>YOU <b>↓</b> COPY <b>↓</b> PASTE <b>↓</b> EXPLAIN <b>↓</b> REPEAT</p></div><div className="compare-with"><span>WITH LOCALBRIDGE</span><p>CLAUDE <b>↕</b> LOCALBRIDGE <b>↕</b> PROJECT</p></div></div></div></section>
-
-        <section className="section-dark developer-section"><div className="section-inner"><SectionLabel number="07" dark>BUILT FOR DEVELOPERS</SectionLabel><div className="developer-layout"><h2>Your editor.<br />Your project.<br /><span>Your workflow.</span></h2><ol>{['Works with VS Code', 'Connects AI agents to your local workspace', 'Supports project file operations', 'Supports Git inspection', 'Maintains project context', 'Free to use'].map((item, i) => <li key={item}><span>0{i + 1}</span>{item}</li>)}</ol></div></div></section>
-
-        <section id="launch" className="section-light launch-section"><div className="section-inner"><SectionLabel number="08">LAUNCHING SOON</SectionLabel><h2>LocalBridge is<br /><em>coming to VS Code.</em></h2><p>One free extension.<br />A simpler way to connect AI with your local code.</p><div className="launch-footer"><span className="free-badge">FREE VS CODE EXTENSION</span><a className="button button-dark" href="#top">LAUNCHING SOON ON VSCODE <ArrowUpRight /></a></div></div></section>
-      </main>
-
-      <footer className="section-dark site-footer"><div className="footer-top"><a href="#top" className="wordmark wordmark-footer"><img src="/localbridge.png" alt="" /><span>LOCALBRIDGE</span></a><span>FREE VS CODE EXTENSION</span></div><div className="footer-bottom"><span>© 2026 LOCALBRIDGE</span><nav><a href="#about">About</a><a href="#how-it-works">How it works</a><a href="#claude">Claude</a><a href="#tools">Tools</a></nav></div></footer>
-    </div>
-  )
+  const [menuOpen, setMenuOpen] = useState(false); const closeMenu = () => setMenuOpen(false)
+  return <div className="site-shell">
+    <header className="site-nav"><a href="#top" className="wordmark" onClick={closeMenu} aria-label="LocalBridge home"><img src="/localbridge.png" alt="" /><span>LOCALBRIDGE</span></a><button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-label={menuOpen ? 'Close menu' : 'Open menu'}>{menuOpen ? <X /> : <Menu />}</button><nav className={`nav-links ${menuOpen ? 'nav-links-open' : ''}`} aria-label="Main navigation"><a href="#about" onClick={closeMenu}>01 THE GAP</a><a href="#architecture" onClick={closeMenu}>03 ARCHITECTURE</a><a href="#tools" onClick={closeMenu}>06 TOOLBOX</a><a className="nav-launch" href="#launch" onClick={closeMenu}>LAUNCHING SOON <ArrowUpRight /></a></nav></header>
+    <main id="top">
+      <section className="hero section-light"><div className="hero-copy"><p className="eyebrow">THE BRIDGE BETWEEN WEB AI &amp; LOCAL DEVELOPMENT</p><h1>Web AI.<br /><em>Local environment.</em><br />One bridge.</h1><p className="hero-intro">LocalBridge is a free VS Code extension that connects web-based AI agents to your local development environment through a growing set of workspace, Git, process, terminal, HTTP and runtime tools.</p><div className="hero-actions"><a className="button button-dark" href="#launch">LAUNCHING SOON ON VSCODE <ArrowUpRight /></a><a className="text-link" href="#how-it-works">SEE HOW IT WORKS <ArrowDown /></a></div></div><div className="hero-visual"><div className="visual-index">LB / 001</div><BridgeDiagram /><div className="visual-caption">WEB AI ↕ LOCALBRIDGE ↕<br />LOCAL ENVIRONMENT</div></div></section>
+      <section id="about" className="section-dark problem-section"><div className="section-inner split-grid"><SectionLabel number="01" dark>THE GAP</SectionLabel><div className="problem-content"><h2>AI can live anywhere.<br /><span>Your development environment can&apos;t.</span></h2><p>Modern AI agents can reason, generate code and help build software. But when an agent operates from a web-based environment, it still needs a reliable way to interact with the local environment where development actually happens.</p><p>That&apos;s the layer LocalBridge provides.</p><p className="statement">WEB AI<br />↓<br />LOCALBRIDGE<br />↓<br />LOCAL ENVIRONMENT</p></div><BridgeDiagram dark /></div></section>
+      <section id="bridge" className="section-light bridge-section"><div className="section-inner"><SectionLabel number="02">THE BRIDGE</SectionLabel><div className="section-heading-row"><h2>Not another coding agent.<br /><em>A local bridge for one.</em></h2><p>LocalBridge is a free VS Code extension that exposes a set of local development tools to connected AI agents. It focuses on the connection between the agent and the environment where your software is being developed.</p></div><div className="feature-trio"><article><strong>THE AGENT</strong><p>Thinks, plans, generates and decides what should happen.</p></article><article><strong>THE BRIDGE</strong><p>Receives supported tool requests and connects them to your environment.</p></article><article><strong>THE ENVIRONMENT</strong><p>Acts on files, Git, terminals, processes, servers and runtime.</p></article></div><p className="bridge-statement">THE AGENT THINKS.<br />LOCALBRIDGE CONNECTS.<br />YOUR ENVIRONMENT ACTS.</p></div></section>
+      <section id="architecture" className="section-dark architecture-section"><div className="section-inner"><SectionLabel number="03" dark>THE ARCHITECTURE</SectionLabel><h2 className="center-heading">Three layers.<br /><span>Three different jobs.</span></h2><div className="architecture-grid"><article><span>01</span><h3>WEB AI</h3><p>The agent you use to reason, plan, generate and modify software.</p><small>Claude · Codex · Other AI agents</small></article><article><span>02</span><h3>LOCALBRIDGE</h3><p>The local bridge that receives supported tool requests and connects them to your development environment.</p></article><article><span>03</span><h3>LOCAL ENVIRONMENT</h3><p>Your workspace, files, Git repository, terminal, processes, local servers and development runtime.</p></article></div></div></section>
+      <section id="how-it-works" className="section-light how-light"><div className="section-inner"><SectionLabel number="04">HOW IT WORKS</SectionLabel><div className="section-heading-row"><h2>From an AI request<br />to your local environment.</h2><p>LocalBridge is the connection layer between an agent operating outside your workspace and the tools that make development happen locally.</p></div><div className="steps-grid light-steps">{steps.map(([n, title, body]) => <article key={n} className="step"><span>{n}</span><h3>{title}</h3><p>{body}</p></article>)}</div><div className="flow-strip"><span>AI AGENT</span><i>↓</i><span>REQUEST</span><i>↓</i><span>LOCALBRIDGE</span><i>↓</i><span>LOCAL ENVIRONMENT</span><i>↓</i><span>RESULT</span></div></div></section>
+      <section id="claude" className="section-dark claude-section"><div className="section-inner"><SectionLabel number="05" dark>CONNECT CLAUDE</SectionLabel><div className="section-heading-row"><h2>Connect Claude<br />to your local environment.</h2><p>Use LocalBridge as the connection layer between Claude and your VS Code workspace. This section stays conceptual until exact setup details are available.</p></div><div className="setup-layout"><div className="setup-list">{[['01', 'Install LocalBridge', 'Install the free extension in VS Code.'], ['02', 'Open your project', 'Open the workspace you want to work with.'], ['03', 'Start the bridge', 'Start LocalBridge from the extension.'], ['04', 'Connect Claude', 'Configure Claude to use the LocalBridge connection.'], ['05', 'Work with your environment', 'Claude can request supported workspace and development operations through LocalBridge.']].map(([n, title, body]) => <article key={n}><span>{n}</span><div><h3>{title}</h3><p>{body}</p></div></article>)}</div><div className="terminal-card"><div className="terminal-top"><span>LOCALBRIDGE / LAYER</span><span>●</span></div><div className="terminal-body"><p className="muted">web AI</p><p>↓ <b>supported request</b></p><p>localbridge <b>connected</b></p><p>↓ <b>local operation</b></p><p>local environment <b>ready</b></p><div className="terminal-rule" /><p className="muted">connection layer active<span className="cursor" /></p></div></div></div></div></section>
+      <section id="tools" className="section-light tools-light"><div className="section-inner"><SectionLabel number="06">THE TOOLBOX</SectionLabel><div className="section-heading-row tools-heading"><h2>29 tools for<br />the local environment.</h2><p>LocalBridge exposes a growing set of tools that let connected AI agents interact with your workspace, repository, terminal, processes and local development environment.</p></div><p className="tools-count light-count">29 TOOLS AVAILABLE</p>{toolGroups.map(group => <div className="tool-category" key={group.title}><h3>{group.title}</h3><div className="tools-grid">{group.tools.map(([n, title, body]) => <article key={n}><span>{n}</span><h4>{title}</h4><p>{body}</p><ArrowUpRight /></article>)}</div></div>)}</div></section>
+      <section className="section-dark beyond-section"><div className="section-inner"><SectionLabel number="07" dark>BEYOND FILES</SectionLabel><div className="section-heading-row"><h2>Your development environment is more than a folder.</h2><p>Building software involves more than reading and writing files. LocalBridge extends the connection into the parts of development that happen around the code.</p></div><div className="beyond-list">FILES · GIT · TERMINALS · COMMANDS · PROCESSES · TESTS · LOCAL SERVERS · HTTP · DIAGNOSTICS · ENVIRONMENT</div><p className="statement-dark">One bridge.<br />More of the environment.</p></div></section>
+      <section className="section-light experience-section"><div className="section-inner"><SectionLabel number="08">THE DIFFERENCE</SectionLabel><h2>The agent and<br /><em>the bridge have</em><br />different jobs.</h2><div className="compare-grid three-col"><div><span>AI AGENT</span><p>Reason about the task.<br />Plan the work.<br />Generate code.</p></div><div><span>LOCALBRIDGE</span><p>Connect the agent.<br />Expose supported tools.<br />Return results.</p></div><div><span>LOCAL ENVIRONMENT</span><p>Files.<br />Git.<br />Processes.<br />Terminals.<br />Servers.</p></div></div></div></section>
+      <section className="section-dark developer-section"><div className="section-inner"><SectionLabel number="09" dark>THE EXPERIENCE</SectionLabel><div className="developer-layout"><h2>Stop building<br />the connection<br /><span>yourself.</span></h2><ol><li><span>WITHOUT</span>AI → MANUAL HANDOFFS → FILES → TERMINAL → ENVIRONMENT</li><li><span>WITH</span>AI ↕ LOCALBRIDGE ↕ LOCAL ENVIRONMENT</li></ol></div><p className="experience-dark-copy">LocalBridge provides the local layer between a connected AI agent and the development environment.</p></div></section>
+      <section className="section-light workflow-section"><div className="section-inner"><SectionLabel number="10">THE WORKFLOW</SectionLabel><h2>Use the AI interface<br /><em>you already prefer.</em></h2><p className="experience-copy">LocalBridge is designed to sit underneath the AI workflow rather than replace it.</p><div className="workflow-stack"><strong>YOUR AI AGENT</strong><b>+</b><strong>LOCALBRIDGE</strong><b>+</b><strong>YOUR DEVELOPMENT ENVIRONMENT</strong></div><p className="bridge-statement">Keep the agent.<br />Add the bridge.</p></div></section>
+      <section id="launch" className="section-dark launch-section"><div className="section-inner"><SectionLabel number="11" dark>LAUNCHING SOON</SectionLabel><h2>A bridge between<br />web AI and local development.</h2><p>LocalBridge is a free VS Code extension for connecting web-based AI agents to local development environments through a growing set of tools.</p><div className="launch-footer"><span className="free-badge">FREE VS CODE EXTENSION</span><a className="button button-dark button-invert" href="#top">LAUNCHING SOON ON VSCODE <ArrowUpRight /></a></div></div></section>
+    </main>
+    <footer className="section-dark site-footer"><div className="footer-top"><a href="#top" className="wordmark wordmark-footer"><img src="/localbridge.png" alt="" /><span>LOCALBRIDGE</span></a><span>FREE VS CODE EXTENSION</span></div><div className="footer-bottom"><span>© 2026 LOCALBRIDGE</span><nav><a href="#about">The gap</a><a href="#architecture">Architecture</a><a href="#tools">Toolbox</a></nav></div></footer>
+  </div>
 }

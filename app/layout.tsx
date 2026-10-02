@@ -3,8 +3,8 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'LocalBridge — Give your AI access to your local codebase',
-  description: 'LocalBridge is a free VS Code extension that connects AI coding agents like Claude to your local project.',
+  title: 'LocalBridge — Web AI to local development',
+  description: 'LocalBridge connects web-based AI agents to local development environments through a growing set of workspace and runtime tools.',
   generator: 'v0.app',
   icons: {
     icon: [
