@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { ArrowDown, ArrowUpRight, Menu, X } from 'lucide-react'
 import { BridgeDiagram } from '@/components/bridge-diagram'
+import { FooterContactWidget } from '@/components/footer-contact-widget'
 import { LaunchOrbit } from '@/components/launch-orbit'
 import { RotatingAI } from '@/components/rotating-ai'
 
@@ -63,14 +64,33 @@ export function LandingPage() {
   return <div className="site-shell">
     <header className="site-nav"><a href="#top" className="wordmark" onClick={closeMenu} aria-label="LocalBridge home"><img src="/localbridge.png" alt="" /><span>LOCALBRIDGE</span></a><button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-label={menuOpen ? 'Close menu' : 'Open menu'}>{menuOpen ? <X /> : <Menu />}</button><nav className={`nav-links ${menuOpen ? 'nav-links-open' : ''}`} aria-label="Main navigation"><a href="#how-it-works" onClick={closeMenu}>HOW IT WORKS</a><a href="#tools" onClick={closeMenu}>29 TOOLS</a><a className="nav-launch" href="#launch" onClick={closeMenu}>LAUNCHING SOON <ArrowUpRight /></a></nav></header>
     <main id="top">
-      <section className="hero section-light"><div className="hero-copy"><h1><span className="hero-headline-first">Connect <RotatingAI /></span><br /><em>to your local workspace.</em></h1><p className="hero-intro">A free VS Code extension.</p><div className="hero-actions"><a className="button button-dark" href="#launch">LAUNCHING SOON <ArrowUpRight /></a><a className="text-link" href="#how-it-works">SEE HOW IT WORKS <ArrowDown /></a></div></div><div className="hero-visual"><BridgeDiagram /></div></section>
+      <section className="hero section-light">
+        <div className="hero-copy">
+          <h1><span className="hero-headline-first">Connect <RotatingAI /></span><br /><em>to your local workspace.</em></h1>
+          <p className="hero-intro">A free VS Code extension.</p>
+          <div className="hero-trust">
+            <p className="hero-trust-lead">Built Local-First.</p>
+            <p className="hero-trust-detail">No LocalBridge server. No code or secrets sent to us. Secrets are stored in VS Code Secret Storage.</p>
+          </div>
+          <div className="hero-actions">
+            <a className="button button-dark" href="#launch">LAUNCHING SOON <ArrowUpRight /></a>
+            <a className="text-link" href="#how-it-works">SEE HOW IT WORKS <ArrowDown /></a>
+          </div>
+        </div>
+        <div className="hero-visual"><BridgeDiagram /></div>
+      </section>
       <section id="how-it-works" className="section-dark how-section"><div className="section-inner how-layout"><div className="how-media"><GuideVideo src="https://cdn.widgetkraft.com/localbridge/LocalConnect.mp4" label="Setting up LocalBridge locally" /></div><div className="how-copy"><Label number="01" dark>HOW IT WORKS</Label><h2>Connect. Build. Run.</h2><ol className="guide-steps how-steps">{localBridgeGuide.map((step, index) => <li key={step}><span>{String(index + 1).padStart(2, '0')}</span><p>{step}</p></li>)}</ol></div></div></section>
       <section id="claude" className="section-light guide-section"><div className="section-inner guide-sticky-layout"><div className="guide-copy"><Label number="02">CLAUDE</Label><h2><span className="guide-title-top">Connect Claude</span><br /><em>to your workspace.</em></h2><ol className="guide-steps">{claudeGuide.map((step, index) => <li key={step}><span>{String(index + 1).padStart(2, '0')}</span><p>{step}</p></li>)}</ol></div><div className="guide-media"><GuideVideo src="https://cdn.widgetkraft.com/localbridge/ClaudeConnect.mp4" label="Connecting Claude to LocalBridge" /></div></div></section>
       <section id="connect-chatgpt" className="section-dark guide-section"><div className="section-inner guide-sticky-layout guide-sticky-reverse"><div className="guide-copy"><Label number="03" dark>CHATGPT</Label><h2><span className="guide-title-top">Connect ChatGPT</span><br /><em>to your workspace.</em></h2><ol className="guide-steps">{chatgptGuide.map((step, index) => <li key={step}><span>{String(index + 1).padStart(2, '0')}</span><p>{step}</p></li>)}</ol></div><div className="guide-media"><GuideVideo src="https://cdn.widgetkraft.com/localbridge/gptConnect.mp4" label="Connecting ChatGPT to LocalBridge" /></div></div></section>
       <section id="tools" className="section-light tools-light"><div className="section-inner"><Label number="04">29 TOOLS</Label><div className="section-heading-row tools-heading"><h2>29 tools.<br /><em>One bridge.</em></h2><p>FILES · GIT · TERMINAL · PROCESSES · SERVERS · TESTS · HTTP · DIAGNOSTICS</p></div><div className="tool-groups">{toolGroups.map(([group, tools]) => <div className="tool-category" key={group as string}><h3>{group}</h3><div className="tools-grid">{(tools as string[]).map((tool, index) => <article key={`${group}-${tool}-${index}`}><span>{String(index + 1).padStart(2, '0')}</span><h4>{tool}</h4><ArrowUpRight /></article>)}</div></div>)}</div></div></section>
       <section className="launch-section-wrap section-dark" id="launch">
         <div className="section-inner">
-          <div className="launch-card">
+          <div className="launch-card-shell">
+            <span className="launch-card-corner launch-card-corner-tl" aria-hidden />
+            <span className="launch-card-corner launch-card-corner-tr" aria-hidden />
+            <span className="launch-card-corner launch-card-corner-bl" aria-hidden />
+            <span className="launch-card-corner launch-card-corner-br" aria-hidden />
+            <div className="launch-card">
             <div className="launch-card-copy">
               <Label number="05">LAUNCHING SOON</Label>
               <h2>Web AI.<br /><em>Local workspace.</em></h2>
@@ -82,6 +102,7 @@ export function LandingPage() {
             </div>
             <div className="launch-card-visual">
               <LaunchOrbit />
+            </div>
             </div>
           </div>
         </div>
@@ -108,26 +129,32 @@ export function LandingPage() {
               </a>
             </div>
           </div>
-          <div className="footer-nav-grid">
-            <div className="footer-nav-col">
-              <h3>Setup</h3>
-              <ul>
-                <li><a href="#how-it-works">How It Works</a></li>
-              </ul>
+          <div className="footer-nav-wrap">
+            <div className="footer-nav-grid">
+              <div className="footer-nav-col">
+                <h3>Setup</h3>
+                <ul>
+                  <li><a href="#how-it-works">How It Works</a></li>
+                </ul>
+              </div>
+              <div className="footer-nav-col">
+                <h3>Connect</h3>
+                <ul>
+                  <li><a href="#claude">Connect Claude</a></li>
+                  <li><a href="#connect-chatgpt">Connect ChatGPT</a></li>
+                </ul>
+              </div>
+              <div className="footer-nav-col">
+                <h3>Tools</h3>
+                <ul>
+                  <li><a href="#tools">29 Tools</a></li>
+                </ul>
+              </div>
             </div>
-            <div className="footer-nav-col">
-              <h3>Connect</h3>
-              <ul>
-                <li><a href="#claude">Connect Claude</a></li>
-                <li><a href="#connect-chatgpt">Connect ChatGPT</a></li>
-              </ul>
-            </div>
-            <div className="footer-nav-col">
-              <h3>Tools</h3>
-              <ul>
-                <li><a href="#tools">29 Tools</a></li>
-              </ul>
-            </div>
+          </div>
+          <div className="footer-substack">
+            <h3 className="footer-substack-title">Join Waitlist</h3>
+            <FooterContactWidget />
           </div>
         </div>
         <div className="footer-bar">
