@@ -7,20 +7,7 @@ export const metadata: Metadata = {
   description: 'LocalBridge connects web-based AI agents to local development environments through a growing set of workspace and runtime tools.',
   generator: 'v0.app',
   icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
+    icon: '/icon.ico',
     apple: '/apple-icon.png',
   },
 }
