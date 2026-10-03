@@ -103,7 +103,7 @@ const SHADOW_OVERRIDES = `
   .contact-form-embed form button[type="submit"] svg {
     display: none !important;
   }
-  @media (max-width: 480px) {
+  @media (max-width: 640px) {
     .contact-form-embed form {
       flex-direction: column !important;
     }
@@ -113,7 +113,13 @@ const SHADOW_OVERRIDES = `
     .contact-form-embed form button[type="submit"] {
       border-left: 0 !important;
       border-top: 1px solid #e0e0e0 !important;
+      min-height: 44px !important;
       width: 100% !important;
+    }
+    .contact-form-embed form input[type="email"],
+    .contact-form-embed form input[type="text"] {
+      font-size: 16px !important;
+      min-height: 44px !important;
     }
   }
 `
@@ -135,57 +141,36 @@ function injectShadowStyles(container: HTMLElement) {
   shadow.appendChild(style)
 }
 
-function waitForShadow(container: HTMLElement, onReady: () => void) {
-  let attempts = 0
-  const tick = () => {
-    if (container.shadowRoot) {
-      onReady()
-      return
-    }
-    if (attempts++ < 120) requestAnimationFrame(tick)
-  }
-  tick()
-}
-
 export function FooterContactWidget() {
-  const initialized = useRef(false)
+  const initStartedRef = useRef(false)
 
   useEffect(() => {
-    if (initialized.current) return
-
     const container = document.getElementById('contactform-root')
     if (!container) return
 
-    let observer: MutationObserver | undefined
-
     const boot = () => {
-      if (!window.ContactFormWidget || initialized.current) return
-      initialized.current = true
-      window.ContactFormWidget.init({ widgetId: WIDGET_ID, mode: 'inline' })
-      waitForShadow(container, () => {
-        injectShadowStyles(container)
-        observer = new MutationObserver(() => injectShadowStyles(container))
-        observer.observe(container.shadowRoot!, { childList: true, subtree: true })
-      })
+      if (!window.ContactFormWidget) return
+      if (!container.shadowRoot && !initStartedRef.current) {
+        initStartedRef.current = true
+        window.ContactFormWidget.init({ widgetId: WIDGET_ID, mode: 'inline' })
+      }
+      injectShadowStyles(container)
     }
 
     if (window.ContactFormWidget) {
       boot()
-      return () => observer?.disconnect()
+    } else {
+      const existing = document.querySelector(`script[src="${SCRIPT_SRC}"]`)
+      if (existing) {
+        existing.addEventListener('load', boot, { once: true })
+      } else {
+        const script = document.createElement('script')
+        script.src = SCRIPT_SRC
+        script.async = true
+        script.onload = boot
+        document.body.appendChild(script)
+      }
     }
-
-    const existing = document.querySelector(`script[src="${SCRIPT_SRC}"]`)
-    if (existing) {
-      existing.addEventListener('load', boot, { once: true })
-      return () => observer?.disconnect()
-    }
-
-    const script = document.createElement('script')
-    script.src = SCRIPT_SRC
-    script.async = true
-    script.onload = boot
-    document.body.appendChild(script)
-    return () => observer?.disconnect()
   }, [])
 
   return <div id="contactform-root" className="footer-contact-widget" />

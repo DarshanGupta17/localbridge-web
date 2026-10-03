@@ -2,10 +2,25 @@ import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
+const siteDescription = 'Connect your web-based AI agents to your local codebase.'
+const siteTitle = 'LocalBridge — Connect web AI to your local codebase'
+
 export const metadata: Metadata = {
-  title: 'LocalBridge — Web AI to local development',
-  description: 'LocalBridge connects web-based AI agents to local development environments through a growing set of workspace and runtime tools.',
-  generator: 'v0.app',
+  title: {
+    default: siteTitle,
+    template: '%s · LocalBridge',
+  },
+  description: siteDescription,
+  openGraph: {
+    title: siteTitle,
+    description: siteDescription,
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: siteTitle,
+    description: siteDescription,
+  },
   icons: {
     icon: '/icon.ico',
     apple: '/apple-icon.png',
