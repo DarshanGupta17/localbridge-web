@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { trackWidgetKraftEvent } from '@/lib/widgetkraft-analytics'
 
 const WIDGET_ID = '0263f2da-6388-42e9-9d77-9938a86ed4a0'
 const SCRIPT_SRC = 'https://cdn.widgetkraft.com/contact.js'
@@ -141,12 +142,117 @@ function injectShadowStyles(container: HTMLElement) {
   shadow.appendChild(style)
 }
 
+function attachWaitlistAnalytics(container: HTMLElement): (() => void) | undefined {
+  const shadow = container.shadowRoot
+  if (!shadow) return undefined
+
+  const form = shadow.querySelector('form')
+  if (!form || form.dataset.lbAnalyticsAttached === '1') return undefined
+
+  form.dataset.lbAnalyticsAttached = '1'
+  const emailInput = form.querySelector('input[type="email"]')
+
+  let joinSucceeded = false
+
+  emailInput?.addEventListener(
+    'focus',
+    () => {
+      trackWidgetKraftEvent('form', 'Waitlist Form Started', {
+        section: 'waitlist',
+      })
+    },
+    { once: true },
+  )
+
+  emailInput?.addEventListener('input', () => {
+    form.dataset.lbWaitlistHasInput = '1'
+  })
+
+  form.addEventListener('submit', () => {
+    const email = emailInput instanceof HTMLInputElement ? emailInput.value.trim() : ''
+    trackWidgetKraftEvent('form', 'Waitlist Form Submitted', {
+      section: 'waitlist',
+      hasEmail: email.includes('@'),
+    })
+
+    for (const delayMs of [800, 2000, 4500]) {
+      window.setTimeout(() => {
+        if (joinSucceeded) return
+        const submitButton = form.querySelector('button[type="submit"]')
+        const alert = shadow.querySelector('[role="alert"]')
+        const buttonText = submitButton?.textContent ?? ''
+
+        if (/submitted/i.test(buttonText)) {
+          joinSucceeded = true
+          trackWidgetKraftEvent('form', 'Waitlist Join Success', {
+            section: 'waitlist',
+            filled: true,
+          })
+          return
+        }
+
+        if (alert?.textContent && delayMs >= 2000) {
+          trackWidgetKraftEvent('form', 'Waitlist Join Failed', {
+            section: 'waitlist',
+            filled: Boolean(form.dataset.lbWaitlistHasInput),
+            error: alert.textContent.slice(0, 200),
+          })
+        }
+      }, delayMs)
+    }
+  })
+
+  const onPageHide = () => {
+    if (joinSucceeded) return
+    if (form.dataset.lbWaitlistHasInput !== '1') {
+      trackWidgetKraftEvent('custom', 'Waitlist Not Started', {
+        section: 'waitlist',
+        filled: false,
+      })
+      return
+    }
+    trackWidgetKraftEvent('custom', 'Waitlist Not Completed', {
+      section: 'waitlist',
+      filled: true,
+    })
+  }
+
+  window.addEventListener('pagehide', onPageHide)
+
+  return () => {
+    window.removeEventListener('pagehide', onPageHide)
+  }
+}
+
+
+function scheduleWaitlistAnalytics(container: HTMLElement) {
+  const timerIds: number[] = []
+  let detachPageHide: (() => void) | undefined
+
+  for (const delay of [0, 200, 600, 1500, 3000]) {
+    timerIds.push(
+      window.setTimeout(() => {
+        if (detachPageHide) return
+        const teardown = attachWaitlistAnalytics(container)
+        if (teardown) detachPageHide = teardown
+      }, delay),
+    )
+  }
+
+  return () => {
+    for (const id of timerIds) window.clearTimeout(id)
+    detachPageHide?.()
+  }
+}
+
 export function FooterContactWidget() {
   const initStartedRef = useRef(false)
 
   useEffect(() => {
     const container = document.getElementById('contactform-root')
     if (!container) return
+
+    let clearAnalyticsTimers: (() => void) | undefined
 
     const boot = () => {
       if (!window.ContactFormWidget) return
@@ -155,6 +261,8 @@ export function FooterContactWidget() {
         window.ContactFormWidget.init({ widgetId: WIDGET_ID, mode: 'inline' })
       }
       injectShadowStyles(container)
+      clearAnalyticsTimers?.()
+      clearAnalyticsTimers = scheduleWaitlistAnalytics(container)
     }
 
     if (window.ContactFormWidget) {
@@ -170,6 +278,10 @@ export function FooterContactWidget() {
         script.onload = boot
         document.body.appendChild(script)
       }
+    }
+
+    return () => {
+      clearAnalyticsTimers?.()
     }
   }, [])
 

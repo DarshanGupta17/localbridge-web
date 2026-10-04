@@ -1,5 +1,6 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
+import { WidgetKraftAnalyticsScript } from '@/components/widgetkraft-analytics-script'
 import './globals.css'
 
 const siteDescription = 'Connect your web-based AI agents to your local codebase.'
@@ -44,6 +45,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="antialiased">
         {children}
+        <WidgetKraftAnalyticsScript />
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

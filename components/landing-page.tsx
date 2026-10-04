@@ -5,6 +5,7 @@ import { ArrowDown, ArrowUpRight, Menu, X } from 'lucide-react'
 import { BridgeDiagram } from '@/components/bridge-diagram'
 import { FooterContactWidget } from '@/components/footer-contact-widget'
 import { LaunchOrbit } from '@/components/launch-orbit'
+import { LandingPageAnalytics } from '@/components/landing-page-analytics'
 import { RotatingAI } from '@/components/rotating-ai'
 
 const SOCIAL_LINKS = {
@@ -62,9 +63,10 @@ export function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false)
   const closeMenu = () => setMenuOpen(false)
   return <div className="site-shell">
+    <LandingPageAnalytics />
     <header className="site-nav"><a href="#top" className="wordmark" onClick={closeMenu} aria-label="LocalBridge home"><img src="/localbridge.png" alt="" /><span>LOCALBRIDGE</span></a><button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-label={menuOpen ? 'Close menu' : 'Open menu'}>{menuOpen ? <X /> : <Menu />}</button><nav className={`nav-links ${menuOpen ? 'nav-links-open' : ''}`} aria-label="Main navigation"><a href="#how-it-works" onClick={closeMenu}>HOW IT WORKS</a><a href="#tools" onClick={closeMenu}>29 TOOLS</a><a className="nav-launch" href="#launch" onClick={closeMenu}>LAUNCHING SOON <ArrowUpRight /></a></nav></header>
     <main id="top">
-      <section className="hero section-light">
+      <section id="hero" className="hero section-light">
         <div className="hero-copy">
           <h1><span className="hero-headline-first">Connect <RotatingAI /></span><br /><em>to your local workspace.</em></h1>
           <p className="hero-intro">A free VS Code extension.</p>
@@ -108,7 +110,7 @@ export function LandingPage() {
         </div>
       </section>
     </main>
-    <footer className="site-footer">
+    <footer id="waitlist" className="site-footer">
       <div className="footer-inner">
         <div className="footer-main">
           <div className="footer-brand">
