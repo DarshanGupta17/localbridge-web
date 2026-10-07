@@ -8,6 +8,7 @@ const SECTION_LABELS: Record<string, string> = {
   'how-it-works': 'How It Works',
   claude: 'Claude',
   'connect-chatgpt': 'ChatGPT',
+  'connect-gemini': 'Gemini',
   tools: '29 Tools',
   launch: 'Launch',
   waitlist: 'Join Waitlist',

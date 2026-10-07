@@ -48,6 +48,12 @@ const chatgptGuide = [
   'Enter Name + MCP URL → Trust → Create',
   'New Chat → Use MCP → Approve Tool Call',
 ]
+const geminiGuide = [
+  'Open Gemini → Spark',
+  'Settings → Connected Apps',
+  'Custom Apps for Spark → Add a Custom App',
+  'Paste your MCP server HTTPS URL → Connect',
+]
 function GuideVideo({ src, label }: { src: string; label: string }) {
   const videoRef = useRef<HTMLVideoElement>(null)
   useEffect(() => {
@@ -61,7 +67,49 @@ function GuideVideo({ src, label }: { src: string; label: string }) {
 function Label({ number, children, dark = false }: { number: string; children: React.ReactNode; dark?: boolean }) { return <div className={`section-label ${dark ? 'section-label-dark' : ''}`}><span>{number} /</span><span>{children}</span></div> }
 export function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [waitlistHighlight, setWaitlistHighlight] = useState(false)
+  const waitlistHighlightTimerRef = useRef<number | null>(null)
   const closeMenu = () => setMenuOpen(false)
+
+  const scrollToJoinWaitlist = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault()
+    closeMenu()
+    const target = document.getElementById('join-waitlist')
+    target?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+
+    if (waitlistHighlightTimerRef.current) {
+      window.clearTimeout(waitlistHighlightTimerRef.current)
+    }
+    setWaitlistHighlight(true)
+    waitlistHighlightTimerRef.current = window.setTimeout(() => {
+      setWaitlistHighlight(false)
+      waitlistHighlightTimerRef.current = null
+    }, 2800)
+  }
+
+  useEffect(() => {
+    if (window.location.hash !== '#join-waitlist') {
+      return () => {
+        if (waitlistHighlightTimerRef.current) {
+          window.clearTimeout(waitlistHighlightTimerRef.current)
+        }
+      }
+    }
+
+    const target = document.getElementById('join-waitlist')
+    target?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    setWaitlistHighlight(true)
+    waitlistHighlightTimerRef.current = window.setTimeout(() => {
+      setWaitlistHighlight(false)
+      waitlistHighlightTimerRef.current = null
+    }, 2800)
+
+    return () => {
+      if (waitlistHighlightTimerRef.current) {
+        window.clearTimeout(waitlistHighlightTimerRef.current)
+      }
+    }
+  }, [])
   return <div className="site-shell">
     <LandingPageAnalytics />
     <header className="site-nav"><a href="#top" className="wordmark" onClick={closeMenu} aria-label="LocalBridge home"><img src="/localbridge.png" alt="" /><span>LOCALBRIDGE</span></a><button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-label={menuOpen ? 'Close menu' : 'Open menu'}>{menuOpen ? <X /> : <Menu />}</button><nav className={`nav-links ${menuOpen ? 'nav-links-open' : ''}`} aria-label="Main navigation"><a href="#how-it-works" onClick={closeMenu}>HOW IT WORKS</a><a href="#tools" onClick={closeMenu}>29 TOOLS</a><a className="nav-launch" href="#launch" onClick={closeMenu}>LAUNCHING SOON <ArrowUpRight /></a></nav></header>
@@ -76,7 +124,12 @@ export function LandingPage() {
           </div>
           <div className="hero-actions">
             <a className="button button-dark" href="#launch">LAUNCHING SOON <ArrowUpRight /></a>
-            <a className="text-link" href="#how-it-works">SEE HOW IT WORKS <ArrowDown /></a>
+            <div className="hero-quick-links">
+              <a className="text-link" href="#how-it-works">SEE HOW IT WORKS <ArrowDown /></a>
+              <a className="text-link" href="#join-waitlist" onClick={scrollToJoinWaitlist}>
+                JOIN WAITLIST <ArrowDown />
+              </a>
+            </div>
           </div>
         </div>
         <div className="hero-visual"><BridgeDiagram /></div>
@@ -84,7 +137,8 @@ export function LandingPage() {
       <section id="how-it-works" className="section-dark how-section"><div className="section-inner how-layout"><div className="how-media"><GuideVideo src="https://cdn.widgetkraft.com/localbridge/LocalConnect.mp4" label="Setting up LocalBridge locally" /></div><div className="how-copy"><Label number="01" dark>HOW IT WORKS</Label><h2>Connect. Build. Run.</h2><ol className="guide-steps how-steps">{localBridgeGuide.map((step, index) => <li key={step}><span>{String(index + 1).padStart(2, '0')}</span><p>{step}</p></li>)}</ol></div></div></section>
       <section id="claude" className="section-light guide-section"><div className="section-inner guide-sticky-layout"><div className="guide-copy"><Label number="02">CLAUDE</Label><h2><span className="guide-title-top">Connect Claude</span><br /><em>to your workspace.</em></h2><ol className="guide-steps">{claudeGuide.map((step, index) => <li key={step}><span>{String(index + 1).padStart(2, '0')}</span><p>{step}</p></li>)}</ol></div><div className="guide-media"><GuideVideo src="https://cdn.widgetkraft.com/localbridge/ClaudeConnect.mp4" label="Connecting Claude to LocalBridge" /></div></div></section>
       <section id="connect-chatgpt" className="section-dark guide-section"><div className="section-inner guide-sticky-layout guide-sticky-reverse"><div className="guide-copy"><Label number="03" dark>CHATGPT</Label><h2><span className="guide-title-top">Connect ChatGPT</span><br /><em>to your workspace.</em></h2><ol className="guide-steps">{chatgptGuide.map((step, index) => <li key={step}><span>{String(index + 1).padStart(2, '0')}</span><p>{step}</p></li>)}</ol></div><div className="guide-media"><GuideVideo src="https://cdn.widgetkraft.com/localbridge/gptConnect.mp4" label="Connecting ChatGPT to LocalBridge" /></div></div></section>
-      <section id="tools" className="section-light tools-light"><div className="section-inner"><Label number="04">29 TOOLS</Label><div className="section-heading-row tools-heading"><h2>29 tools.<br /><em>One bridge.</em></h2><p>FILES · GIT · TERMINAL · PROCESSES · SERVERS · TESTS · HTTP · DIAGNOSTICS</p></div><div className="tool-groups">{toolGroups.map(([group, tools]) => <div className="tool-category" key={group as string}><h3>{group}</h3><div className="tools-grid">{(tools as string[]).map((tool, index) => <article key={`${group}-${tool}-${index}`}><span>{String(index + 1).padStart(2, '0')}</span><h4>{tool}</h4><ArrowUpRight /></article>)}</div></div>)}</div></div></section>
+      <section id="connect-gemini" className="section-light guide-section"><div className="section-inner guide-sticky-layout"><div className="guide-copy"><Label number="04">GEMINI</Label><h2><span className="guide-title-top">Connect Gemini</span><br /><em>to your workspace.</em></h2><p className="guide-requirement">Requires Gemini PRO</p><ol className="guide-steps">{geminiGuide.map((step, index) => <li key={step}><span>{String(index + 1).padStart(2, '0')}</span><p>{step}</p></li>)}</ol></div><div className="guide-media"><GuideVideo src="https://cdn.widgetkraft.com/localbridge/geminiConnect.mp4" label="Connecting Gemini to LocalBridge" /></div></div></section>
+      <section id="tools" className="section-light tools-light"><div className="section-inner"><Label number="05">29 TOOLS</Label><div className="section-heading-row tools-heading"><h2>29 tools.<br /><em>One bridge.</em></h2><p>FILES · GIT · TERMINAL · PROCESSES · SERVERS · TESTS · HTTP · DIAGNOSTICS</p></div><div className="tool-groups">{toolGroups.map(([group, tools]) => <div className="tool-category" key={group as string}><h3>{group}</h3><div className="tools-grid">{(tools as string[]).map((tool, index) => <article key={`${group}-${tool}-${index}`}><span>{String(index + 1).padStart(2, '0')}</span><h4>{tool}</h4><ArrowUpRight /></article>)}</div></div>)}</div></div></section>
       <section className="launch-section-wrap section-dark" id="launch">
         <div className="section-inner">
           <div className="launch-card-shell">
@@ -94,7 +148,7 @@ export function LandingPage() {
             <span className="launch-card-corner launch-card-corner-br" aria-hidden />
             <div className="launch-card">
             <div className="launch-card-copy">
-              <Label number="05">LAUNCHING SOON</Label>
+              <Label number="06">LAUNCHING SOON</Label>
               <h2>Web AI.<br /><em>Local workspace.</em></h2>
               <p className="launch-subline">LOCALBRIDGE.</p>
               <div className="launch-card-footer">
@@ -144,6 +198,7 @@ export function LandingPage() {
                 <ul>
                   <li><a href="#claude">Connect Claude</a></li>
                   <li><a href="#connect-chatgpt">Connect ChatGPT</a></li>
+                  <li><a href="#connect-gemini">Connect Gemini</a></li>
                 </ul>
               </div>
               <div className="footer-nav-col">
@@ -154,7 +209,10 @@ export function LandingPage() {
               </div>
             </div>
           </div>
-          <div className="footer-substack">
+          <div
+            id="join-waitlist"
+            className={`footer-substack ${waitlistHighlight ? 'footer-substack-highlight' : ''}`}
+          >
             <h3 className="footer-substack-title">Join Waitlist</h3>
             <FooterContactWidget />
           </div>

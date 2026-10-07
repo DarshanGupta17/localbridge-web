@@ -5,9 +5,19 @@ import { trackWidgetKraftEvent } from '@/lib/widgetkraft-analytics'
 
 const WIDGET_ID = '0263f2da-6388-42e9-9d77-9938a86ed4a0'
 const SCRIPT_SRC = 'https://cdn.widgetkraft.com/contact.js'
-const STYLE_ID = 'localbridge-contact-overrides'
+const STYLE_ID = 'localbridge-contact-overrides-v4'
 
 const SHADOW_OVERRIDES = `
+  .contact-form-embed {
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  .contact-form-embed > div {
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
   .contact-form-embed > div > div > div {
     background: transparent !important;
     border-radius: 0 !important;
@@ -26,10 +36,13 @@ const SHADOW_OVERRIDES = `
   .contact-form-embed form {
     align-items: stretch !important;
     border: 1px solid #e0e0e0 !important;
+    box-sizing: border-box !important;
     display: flex !important;
     flex-direction: row !important;
     gap: 0 !important;
     margin: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
   }
   .contact-form-embed form > div:first-child {
     display: flex !important;
