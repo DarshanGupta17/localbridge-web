@@ -1,12 +1,15 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { ArrowDown, ArrowUpRight, Menu, X } from 'lucide-react'
+import { ArrowDown, ArrowRight, ArrowUpRight, Menu, X } from 'lucide-react'
 import { BridgeDiagram } from '@/components/bridge-diagram'
 import { FooterContactWidget } from '@/components/footer-contact-widget'
 import { LaunchOrbit } from '@/components/launch-orbit'
 import { LandingPageAnalytics } from '@/components/landing-page-analytics'
 import { RotatingAI } from '@/components/rotating-ai'
+
+const VSCODE_MARKETPLACE_URL =
+  'https://marketplace.visualstudio.com/items?itemName=Darshangupta.localbridge'
 
 const SOCIAL_LINKS = {
   twitter: 'https://x.com/darshan_gupta17',
@@ -67,52 +70,91 @@ function GuideVideo({ src, label }: { src: string; label: string }) {
 function Label({ number, children, dark = false }: { number: string; children: React.ReactNode; dark?: boolean }) { return <div className={`section-label ${dark ? 'section-label-dark' : ''}`}><span>{number} /</span><span>{children}</span></div> }
 export function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const [waitlistHighlight, setWaitlistHighlight] = useState(false)
-  const waitlistHighlightTimerRef = useRef<number | null>(null)
+  const [newsletterHighlight, setNewsletterHighlight] = useState(false)
+  const newsletterHighlightTimerRef = useRef<number | null>(null)
   const closeMenu = () => setMenuOpen(false)
 
-  const scrollToJoinWaitlist = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault()
-    closeMenu()
-    const target = document.getElementById('join-waitlist')
-    target?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-
-    if (waitlistHighlightTimerRef.current) {
-      window.clearTimeout(waitlistHighlightTimerRef.current)
+  const triggerNewsletterHighlight = () => {
+    if (newsletterHighlightTimerRef.current) {
+      window.clearTimeout(newsletterHighlightTimerRef.current)
     }
-    setWaitlistHighlight(true)
-    waitlistHighlightTimerRef.current = window.setTimeout(() => {
-      setWaitlistHighlight(false)
-      waitlistHighlightTimerRef.current = null
+    setNewsletterHighlight(true)
+    newsletterHighlightTimerRef.current = window.setTimeout(() => {
+      setNewsletterHighlight(false)
+      newsletterHighlightTimerRef.current = null
     }, 2800)
   }
 
+  const scrollToNewsletter = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault()
+    closeMenu()
+    const target = document.getElementById('newsletter') || document.getElementById('join-waitlist')
+    target?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    triggerNewsletterHighlight()
+  }
+
   useEffect(() => {
-    if (window.location.hash !== '#join-waitlist') {
+    if (window.location.hash !== '#newsletter' && window.location.hash !== '#join-waitlist') {
       return () => {
-        if (waitlistHighlightTimerRef.current) {
-          window.clearTimeout(waitlistHighlightTimerRef.current)
+        if (newsletterHighlightTimerRef.current) {
+          window.clearTimeout(newsletterHighlightTimerRef.current)
         }
       }
     }
 
-    const target = document.getElementById('join-waitlist')
+    const target = document.getElementById('newsletter') || document.getElementById('join-waitlist')
     target?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    setWaitlistHighlight(true)
-    waitlistHighlightTimerRef.current = window.setTimeout(() => {
-      setWaitlistHighlight(false)
-      waitlistHighlightTimerRef.current = null
-    }, 2800)
+    triggerNewsletterHighlight()
 
     return () => {
-      if (waitlistHighlightTimerRef.current) {
-        window.clearTimeout(waitlistHighlightTimerRef.current)
+      if (newsletterHighlightTimerRef.current) {
+        window.clearTimeout(newsletterHighlightTimerRef.current)
       }
     }
   }, [])
   return <div className="site-shell">
     <LandingPageAnalytics />
-    <header className="site-nav"><a href="#top" className="wordmark" onClick={closeMenu} aria-label="LocalBridge home"><img src="/localbridge.png" alt="" /><span>LOCALBRIDGE</span></a><button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-label={menuOpen ? 'Close menu' : 'Open menu'}>{menuOpen ? <X /> : <Menu />}</button><nav className={`nav-links ${menuOpen ? 'nav-links-open' : ''}`} aria-label="Main navigation"><a href="#how-it-works" onClick={closeMenu}>HOW IT WORKS</a><a href="#tools" onClick={closeMenu}>29 TOOLS</a><a className="nav-launch" href="#launch" onClick={closeMenu}>LAUNCHING SOON <ArrowUpRight /></a></nav></header>
+    <div className="site-header">
+      <a
+        href={VSCODE_MARKETPLACE_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="top-banner"
+        onClick={closeMenu}
+      >
+        <span className="top-banner-inner">
+          <span className="top-banner-text">Find the extension on VS Code</span>
+          <ArrowRight className="top-banner-arrow" aria-hidden="true" />
+        </span>
+      </a>
+      <header className="site-nav">
+        <a href="#top" className="wordmark" onClick={closeMenu} aria-label="LocalBridge home">
+          <img src="/localbridge.png" alt="" />
+          <span>LOCALBRIDGE</span>
+        </a>
+        <button
+          className="menu-toggle"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-expanded={menuOpen}
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+        >
+          {menuOpen ? <X /> : <Menu />}
+        </button>
+        <nav className={`nav-links ${menuOpen ? 'nav-links-open' : ''}`} aria-label="Main navigation">
+          <a href="#how-it-works" onClick={closeMenu}>HOW IT WORKS</a>
+          <a href="#tools" onClick={closeMenu}>29 TOOLS</a>
+          <a
+            className="nav-launch"
+            href={VSCODE_MARKETPLACE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={closeMenu}
+          >
+            INSTALL EXTENSION <ArrowUpRight />
+          </a>
+        </nav>
+      </header>
+    </div>
     <main id="top">
       <section id="hero" className="hero section-light">
         <div className="hero-copy">
@@ -123,11 +165,18 @@ export function LandingPage() {
             <p className="hero-trust-detail">No LocalBridge server. No code or secrets sent to us. Secrets are stored in VS Code Secret Storage.</p>
           </div>
           <div className="hero-actions">
-            <a className="button button-dark" href="#launch">LAUNCHING SOON <ArrowUpRight /></a>
+            <a
+              className="button button-dark"
+              href={VSCODE_MARKETPLACE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              INSTALL EXTENSION <ArrowUpRight />
+            </a>
             <div className="hero-quick-links">
               <a className="text-link" href="#how-it-works">SEE HOW IT WORKS <ArrowDown /></a>
-              <a className="text-link" href="#join-waitlist" onClick={scrollToJoinWaitlist}>
-                JOIN WAITLIST <ArrowDown />
+              <a className="text-link" href="#newsletter" onClick={scrollToNewsletter}>
+                JOIN NEWSLETTER <ArrowDown />
               </a>
             </div>
           </div>
@@ -148,12 +197,19 @@ export function LandingPage() {
             <span className="launch-card-corner launch-card-corner-br" aria-hidden />
             <div className="launch-card">
             <div className="launch-card-copy">
-              <Label number="06">LAUNCHING SOON</Label>
+              <Label number="06">AVAILABLE NOW</Label>
               <h2>Web AI.<br /><em>Local workspace.</em></h2>
               <p className="launch-subline">LOCALBRIDGE.</p>
               <div className="launch-card-footer">
                 <span className="free-badge launch-free-badge">FREE VS CODE EXTENSION</span>
-                <a className="button button-dark launch-card-cta" href="#top">LAUNCHING SOON <ArrowUpRight /></a>
+                <a
+                  className="button button-dark launch-card-cta"
+                  href={VSCODE_MARKETPLACE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  INSTALL EXTENSION <ArrowUpRight />
+                </a>
               </div>
             </div>
             <div className="launch-card-visual">
@@ -191,6 +247,15 @@ export function LandingPage() {
                 <h3>Setup</h3>
                 <ul>
                   <li><a href="#how-it-works">How It Works</a></li>
+                  <li>
+                    <a
+                      href={VSCODE_MARKETPLACE_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      VS Code Extension
+                    </a>
+                  </li>
                 </ul>
               </div>
               <div className="footer-nav-col">
@@ -210,10 +275,10 @@ export function LandingPage() {
             </div>
           </div>
           <div
-            id="join-waitlist"
-            className={`footer-substack ${waitlistHighlight ? 'footer-substack-highlight' : ''}`}
+            id="newsletter"
+            className={`footer-substack ${newsletterHighlight ? 'footer-substack-highlight' : ''}`}
           >
-            <h3 className="footer-substack-title">Join Waitlist</h3>
+            <h3 className="footer-substack-title">Join Newsletter</h3>
             <FooterContactWidget />
           </div>
         </div>

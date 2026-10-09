@@ -11,14 +11,15 @@ const SECTION_LABELS: Record<string, string> = {
   'connect-gemini': 'Gemini',
   tools: '29 Tools',
   launch: 'Launch',
-  waitlist: 'Join Waitlist',
+  newsletter: 'Join Newsletter',
+  waitlist: 'Join Newsletter',
 }
 
 function nearestSectionId(el: Element | null): string {
   if (!el) return ''
   const section = el.closest('section[id], footer[id]')
   if (section?.id) return section.id
-  if (el.closest('header.site-nav')) return 'nav'
+  if (el.closest('header.site-nav, .site-header, .top-banner')) return 'nav'
   if (el.closest('footer.site-footer')) return 'footer'
   return ''
 }
