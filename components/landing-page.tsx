@@ -52,10 +52,9 @@ const chatgptGuide = [
   'New Chat → Use MCP → Approve Tool Call',
 ]
 const geminiGuide = [
-  'Open Gemini → Spark',
-  'Settings → Connected Apps',
-  'Custom Apps for Spark → Add a Custom App',
-  'Paste your MCP server HTTPS URL → Connect',
+  'Open Gemini → Customize',
+  'Customize → Connectors → Add Custom',
+  'Paste MCP URL → Connect',
 ]
 function GuideVideo({ src, label }: { src: string; label: string }) {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -186,7 +185,7 @@ export function LandingPage() {
       <section id="how-it-works" className="section-dark how-section"><div className="section-inner how-layout"><div className="how-media"><GuideVideo src="https://cdn.widgetkraft.com/localbridge/LocalConnect.mp4" label="Setting up LocalBridge locally" /></div><div className="how-copy"><Label number="01" dark>HOW IT WORKS</Label><h2>Connect. Build. Run.</h2><ol className="guide-steps how-steps">{localBridgeGuide.map((step, index) => <li key={step}><span>{String(index + 1).padStart(2, '0')}</span><p>{step}</p></li>)}</ol></div></div></section>
       <section id="claude" className="section-light guide-section"><div className="section-inner guide-sticky-layout"><div className="guide-copy"><Label number="02">CLAUDE</Label><h2><span className="guide-title-top">Connect Claude</span><br /><em>to your workspace.</em></h2><ol className="guide-steps">{claudeGuide.map((step, index) => <li key={step}><span>{String(index + 1).padStart(2, '0')}</span><p>{step}</p></li>)}</ol></div><div className="guide-media"><GuideVideo src="https://cdn.widgetkraft.com/localbridge/ClaudeConnect.mp4" label="Connecting Claude to LocalBridge" /></div></div></section>
       <section id="connect-chatgpt" className="section-dark guide-section"><div className="section-inner guide-sticky-layout guide-sticky-reverse"><div className="guide-copy"><Label number="03" dark>CHATGPT</Label><h2><span className="guide-title-top">Connect ChatGPT</span><br /><em>to your workspace.</em></h2><ol className="guide-steps">{chatgptGuide.map((step, index) => <li key={step}><span>{String(index + 1).padStart(2, '0')}</span><p>{step}</p></li>)}</ol></div><div className="guide-media"><GuideVideo src="https://cdn.widgetkraft.com/localbridge/gptConnect.mp4" label="Connecting ChatGPT to LocalBridge" /></div></div></section>
-      <section id="connect-gemini" className="section-light guide-section"><div className="section-inner guide-sticky-layout"><div className="guide-copy"><Label number="04">GEMINI</Label><h2><span className="guide-title-top">Connect Gemini</span><br /><em>to your workspace.</em></h2><p className="guide-requirement">Requires Gemini PRO</p><ol className="guide-steps">{geminiGuide.map((step, index) => <li key={step}><span>{String(index + 1).padStart(2, '0')}</span><p>{step}</p></li>)}</ol></div><div className="guide-media"><GuideVideo src="https://cdn.widgetkraft.com/localbridge/geminiConnect.mp4" label="Connecting Gemini to LocalBridge" /></div></div></section>
+      <section id="connect-gemini" className="section-light guide-section"><div className="section-inner guide-sticky-layout"><div className="guide-copy"><Label number="04">GEMINI</Label><h2><span className="guide-title-top">Connect Gemini</span><br /><em>to your workspace.</em></h2><p className="guide-requirement">Requires Gemini PRO</p><ol className="guide-steps">{geminiGuide.map((step, index) => <li key={step}><span>{String(index + 1).padStart(2, '0')}</span><p>{step}</p></li>)}</ol></div><div className="guide-media"><GuideVideo src="https://cdn.widgetkraft.com/localbridge/geminiConnectTask.mp4" label="Connecting Gemini to LocalBridge" /></div></div></section>
       <section id="tools" className="section-light tools-light"><div className="section-inner"><Label number="05">29 TOOLS</Label><div className="section-heading-row tools-heading"><h2>29 tools.<br /><em>One bridge.</em></h2><p>FILES · GIT · TERMINAL · PROCESSES · SERVERS · TESTS · HTTP · DIAGNOSTICS</p></div><div className="tool-groups">{toolGroups.map(([group, tools]) => <div className="tool-category" key={group as string}><h3>{group}</h3><div className="tools-grid">{(tools as string[]).map((tool, index) => <article key={`${group}-${tool}-${index}`}><span>{String(index + 1).padStart(2, '0')}</span><h4>{tool}</h4><ArrowUpRight /></article>)}</div></div>)}</div></div></section>
       <section className="launch-section-wrap section-dark" id="launch">
         <div className="section-inner">
